@@ -1,11 +1,12 @@
-﻿#include <iostream>
+#include <iostream>
 #include <fstream>
 #include <vector>
 #include <list>
 #include <string>
 #include <limits>
 #include <iomanip>
-
+#include <conio.h>
+#include <cstdlib>
 using namespace std;
 
 class MayBay {
@@ -373,7 +374,6 @@ void GhiFileAdmin(const vector<Admin>& dsAdmin, const string& adminFile) {
         return;
     }
 
-    file << dsAdmin.size() << endl;
     for (const auto& admin : dsAdmin) {
         admin.WriteToStream(file);
     }
@@ -689,6 +689,150 @@ void DemChuyenBayCuaMayBay(const string& soHieuMayBay, vector<ChuyenBay>& dsChuy
     }
 }
 
+bool checkLogin(const string &username, const string &password) {
+    ifstream file("Admin.txt");
+    if (!file.is_open()) {
+        cout << "Khong the mo file Admin.txt!\n";
+        return false;
+    }
+
+    string user, pass;
+    while (file >> user >> pass) {
+        if (user == username && pass == password) {
+            file.close();
+            return true;
+        }
+    }
+
+    file.close();
+    return false;
+}
+
+string inputLineWithEsc(const char *label) {
+    cout << label;
+    string s = "";
+    char ch;
+    while (true) {
+        ch = _getch();
+        if (ch == 13) { 
+            cout << endl;
+            break;
+        } else if (ch == 27) { 
+            return "ESC_EXIT";
+        } else if (ch == 8) { 
+            if (s.length() > 0) {
+                s = s.substr(0, s.length() - 1);
+                cout << "\b \b";
+            }
+        } else {
+            s += ch;
+            cout << ch;
+        }
+    }
+    return s;
+}
+
+string inputPassword() {
+    string pass = "";
+    char ch;
+    while (true) {
+        ch = _getch();
+        if (ch == 13) { 
+            cout << endl;
+            break;
+        } else if (ch == 27) { 
+            return "ESC_EXIT";
+        } else if (ch == 8) { 
+            if (pass.length() > 0) {
+                pass = pass.substr(0, pass.length() - 1);
+                cout << "\b \b";
+            }
+        } else {
+            pass += ch;
+            cout << '*';
+        }
+    }
+    return pass;
+}
+
+bool login() {
+    int attempt = 0;
+    const int MAX_ATTEMPT = 3;
+
+    while (attempt < MAX_ATTEMPT) {
+        system("cls");
+        cout << "===== DANG NHAP HE THONG =====\n";
+        cout << "(Nhan ESC bat ky luc nao de thoat)\n\n";
+
+        string username = inputLineWithEsc("Ten dang nhap: ");
+        if (username == "ESC_EXIT") {
+            cout << "\nBan da nhan ESC. Thoat man hinh dang nhap!\n";
+            return false;
+        }
+
+        string password;
+        cout << "Mat khau: ";
+        password = inputPassword();
+        if (password == "ESC_EXIT") {
+            cout << "\nBan da nhan ESC. Thoat man hinh dang nhap!\n";
+            return false;
+        }
+
+        if (checkLogin(username, password)) {
+            cout << "\nDang nhap thanh cong! Xin chao " << username << ".\n";
+            return true;
+        } else {
+            cout << "\nSai ten dang nhap hoac mat khau.\n";
+            attempt++;
+            if (attempt < MAX_ATTEMPT) {
+                cout << "Vui long thu lai (" << attempt << "/" << MAX_ATTEMPT << ")\n";
+                system("pause");
+            }
+        }
+    }
+
+    cout << "\nBan da nhap sai qua 3 lan. He thong se thoat.\n";
+    return false;
+}
+
+void menuQuanLy() {
+    int choice;
+    do {
+        system("cls");
+        cout << "===== MENU QUAN LY =====\n";
+        cout << "1. Xu ly dat ve\n";
+        cout << "2. Tra ve\n";
+        cout << "3. Thong ke\n";
+        cout << "0. Dang xuat\n";
+        cout << "=========================\n";
+        cout << "Nhap lua chon: ";
+        cin >> choice;
+        cin.ignore();
+
+        switch (choice) {
+        case 1:
+            cout << "Ban da chon: Xu ly dat ve\n";
+            system("pause");
+            break;
+        case 2:
+            cout << "Ban da chon: Tra ve\n";
+            system("pause");
+            break;
+        case 3:
+            cout << "Ban da chon: Thong ke\n";
+            system("pause");
+            break;
+        case 0:
+            cout << "Dang xuat thanh cong!\n";
+            break;
+        default:
+            cout << "Lua chon khong hop le!\n";
+            system("pause");
+            break;
+        }
+    } while (choice != 0);
+}
+
 int main() {
     KhoiTaoDuLieuMau();
 
@@ -715,6 +859,13 @@ int main() {
     DemChuyenBayCuaMayBay("VN-X000", dsChuyenBay, dsMayBay);
 
     cout << "\n======================================================\n";
+  cout << "Nhan Enter de tiep tuc den dang nhap...";
+cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
+if (login()) {
+    menuQuanLy();
+} else {
+    cout << "Tam biet!\n";
+}
     return 0;
 }
