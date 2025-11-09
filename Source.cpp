@@ -1,9 +1,11 @@
-#include <iostream>
+﻿#include <iostream>
 #include <fstream>
 #include <vector>
 #include <list>
 #include <string>
 #include <limits>
+#include <iomanip>
+
 using namespace std;
 
 class MayBay {
@@ -117,7 +119,7 @@ public:
         string tenFile = maVe + ".txt";
         ifstream file(tenFile);
         if (!file.is_open()) {
-            cout << "File khong ton tai";
+            // cout << "File khong ton tai"; // Khong in loi o day vi LoadFromFile duoc goi nhieu lan
             return false;
         }
         getline(file, veOut._maVe);
@@ -195,7 +197,6 @@ public:
         }
     }
 
-    // Read a ChuyenBay from stream (expects fields in same order written by WriteToStream)
     static ChuyenBay ReadFromStream(istream& is) {
         ChuyenBay cb;
         getline(is, cb._maChuyenBay);
@@ -271,7 +272,7 @@ void DocFileVeRieng(const string& maVe, Ve& ve) {
     Ve::LoadFromFile(maVe, ve);
 }
 
-void GhiFileMayBay(const vector<MayBay>& dsMayBay, const string& mayBay) {
+void GhiFileMayBay(const vector<MayBay>& dsMayBay, const string& mayBayFile) {
     ofstream file("MayBay.txt");
     if (!file.is_open()) {
         cout << "File khong ton tai";
@@ -284,11 +285,11 @@ void GhiFileMayBay(const vector<MayBay>& dsMayBay, const string& mayBay) {
     file.close();
 }
 
-void DocFileMayBay(vector<MayBay>& dsMayBay, const string& mayBay) {
+void DocFileMayBay(vector<MayBay>& dsMayBay, const string& mayBayFile) {
     dsMayBay.clear();
     ifstream file("MayBay.txt");
     if (!file.is_open()) {
-        cout << "File khong ton tai";
+        cout << "File MayBay.txt khong ton tai";
         return;
     }
     int n;
@@ -302,10 +303,10 @@ void DocFileMayBay(vector<MayBay>& dsMayBay, const string& mayBay) {
     file.close();
 }
 
-void GhiFileKhachHang(const vector<KhachHang>& dsKhachHang, const string& khachHang) {
+void GhiFileKhachHang(const vector<KhachHang>& dsKhachHang, const string& khachHangFile) {
     ofstream file("KhachHang.txt");
     if (!file.is_open()) {
-        cout << "File khong ton tai";
+        cout << "File KhachHang.txt khong ton tai";
         return;
     }
 
@@ -316,11 +317,11 @@ void GhiFileKhachHang(const vector<KhachHang>& dsKhachHang, const string& khachH
     file.close();
 }
 
-void DocFileKhachHang(vector<KhachHang>& dsKhachHang, const string& khachHang) {
+void DocFileKhachHang(vector<KhachHang>& dsKhachHang, const string& khachHangFile) {
     dsKhachHang.clear();
     ifstream file("KhachHang.txt");
     if (!file.is_open()) {
-        cout << "File khong ton tai";
+        cout << "File KhachHang.txt khong ton tai";
         return;
     }
 
@@ -335,10 +336,10 @@ void DocFileKhachHang(vector<KhachHang>& dsKhachHang, const string& khachHang) {
     file.close();
 }
 
-void GhiFileChuyenBay(const vector<ChuyenBay>& dsChuyenBay, const string& chuyenBay) {
+void GhiFileChuyenBay(const vector<ChuyenBay>& dsChuyenBay, const string& chuyenBayFile) {
     ofstream file("ChuyenBay.txt");
     if (!file.is_open()) {
-        cout << "File khong ton tai";
+        cout << "File ChuyenBay.txt khong ton tai";
         return;
     }
     file << dsChuyenBay.size() << endl;
@@ -348,11 +349,11 @@ void GhiFileChuyenBay(const vector<ChuyenBay>& dsChuyenBay, const string& chuyen
     file.close();
 }
 
-void DocFileChuyenBay(vector<ChuyenBay>& dsChuyenBay, const string& chuyenBay) {
+void DocFileChuyenBay(vector<ChuyenBay>& dsChuyenBay, const string& chuyenBayFile) {
     dsChuyenBay.clear();
     ifstream file("ChuyenBay.txt");
     if (!file.is_open()) {
-        cout << "File khong ton tai";
+        cout << "File ChuyenBay.txt khong ton tai";
         return;
     }
     int n;
@@ -368,7 +369,7 @@ void DocFileChuyenBay(vector<ChuyenBay>& dsChuyenBay, const string& chuyenBay) {
 void GhiFileAdmin(const vector<Admin>& dsAdmin, const string& adminFile) {
     ofstream file("Admin.txt");
     if (!file.is_open()) {
-        cout << "File khong ton tai";
+        cout << "File Admin.txt khong ton tai";
         return;
     }
 
@@ -383,7 +384,7 @@ void DocFileAdmin(vector<Admin>& dsAdmin, const string& adminFile) {
     dsAdmin.clear();
     ifstream file("Admin.txt");
     if (!file.is_open()) {
-        cout << "File khong ton tai";
+        cout << "File Admin.txt khong ton tai";
         return;
     }
     int n;
@@ -517,9 +518,203 @@ void KhoiTaoDuLieuMau() {
         Admin("SonTung-MTP", "363636")
     };
     GhiFileAdmin(dsAdmin, "");
-    cout << "Khoi tao du lieu thanh cong\n";
+    cout << "Khoi tao du lieu mau thanh cong\n";
+}
+
+
+//Thong ke & Tim kiem
+string CanLeGiua(const string& text, int width) {
+    if (text.length() >= width) return text;
+    int padding = width - text.length();
+    int pad_left = padding / 2;
+    int pad_right = padding - pad_left;
+    return string(pad_left, ' ') + text + string(pad_right, ' ');
+}
+
+ChuyenBay* TimChuyenBay(const string& maCB, vector<ChuyenBay>& dsCB) {
+    for (auto& cb : dsCB) {
+        if (cb.getMaChuyenBay() == maCB) {
+            return &cb;
+        }
+    }
+    return nullptr;
+}
+
+MayBay* TimMayBay(const string& soHieuMB, vector<MayBay>& dsMB) {
+    for (auto& mb : dsMB) {
+        if (mb.getSoHieu() == soHieuMB) {
+            return &mb;
+        }
+    }
+    return nullptr;
+}
+
+void HienThiKhachHangTheoChuyenBay(const string& maChuyenBay, vector<ChuyenBay>& dsChuyenBay) {
+    cout << "\n--- DANH SACH KHACH HANG CUA CHUYEN BAY " << maChuyenBay << " ---\n";
+
+    ChuyenBay* cb = TimChuyenBay(maChuyenBay, dsChuyenBay);
+
+    if (cb == nullptr) {
+        cout << "\033[31m[LOI] Ma chuyen bay \"" << maChuyenBay << "\" khong ton tai.\033[0m\n";
+        return;
+    }
+
+    const list<Ve>& dsVe = cb->GetDanhSachVe();
+
+    if (dsVe.empty()) {
+        cout << "\033[33m[THONG BAO] Chuyen bay " << maChuyenBay << " chua co ve nao duoc dat.\033[0m\n";
+        return;
+    }
+
+    const int COL_STT = 5;
+    const int COL_CMND = 15;
+    const int COL_HOTEN = 30;
+    const int COL_SOGHE = 10;
+    const int TOTAL_WIDTH = COL_STT + COL_CMND + COL_HOTEN + COL_SOGHE + 5;
+
+    cout << "\033[34m";
+    cout << string(TOTAL_WIDTH, '-') << endl;
+    cout << "|" << CanLeGiua("STT", COL_STT)
+        << "|" << CanLeGiua("CMND", COL_CMND)
+        << "|" << CanLeGiua("HO TEN KHACH HANG", COL_HOTEN)
+        << "|" << CanLeGiua("SO GHE", COL_SOGHE)
+        << "|\n";
+    cout << string(TOTAL_WIDTH, '-') << "\033[0m" << endl;
+
+    int stt = 1;
+    for (const Ve& ve : dsVe) {
+        cout << "|" << setw(COL_STT) << right << stt++
+            << "|" << setw(COL_CMND) << right << ve.getThongTinKhachHang().getCMND()
+            << "|" << setw(COL_HOTEN) << left << ve.getThongTinKhachHang().getHoTen()
+            << "|" << CanLeGiua(ve.getSoGhe(), COL_SOGHE)
+            << "|\n";
+    }
+    cout << string(TOTAL_WIDTH, '-') << endl;
+}
+
+void LietKeGheTrongTheoChuyenBay(const string& maChuyenBay, vector<ChuyenBay>& dsChuyenBay) {
+    cout << "\n--- DANH SACH GHE TRONG CUA CHUYEN BAY " << maChuyenBay << " ---\n";
+
+    ChuyenBay* cb = TimChuyenBay(maChuyenBay, dsChuyenBay);
+
+    if (cb == nullptr) {
+        cout << "\033[31m[LOI] Ma chuyen bay \"" << maChuyenBay << "\" khong ton tai.\033[0m\n";
+        return;
+    }
+
+    const list<string>& dsGheTrong = cb->GetDanhSachGheTrong();
+
+    if (dsGheTrong.empty()) {
+        cout << "\033[31m[CANH BAO] Chuyen bay " << maChuyenBay << " DA HET GHE (Trang thai: " << cb->getTrangThai() << ").\033[0m\n";
+        return;
+    }
+
+    cout << "\033[32m[TONG SO GHE TRONG: " << dsGheTrong.size() << "]\033[0m\n";
+
+    const int COL_WIDTH = 8;
+    const int COLUMNS = 10;
+    const int TOTAL_WIDTH = COL_WIDTH * COLUMNS + (COLUMNS + 1);
+
+    cout << "\033[36m";
+    cout << string(TOTAL_WIDTH, '=') << endl;
+
+    int count = 0;
+    for (const string& ghe : dsGheTrong) {
+        if (count % COLUMNS == 0) {
+            cout << "|";
+        }
+
+        cout << CanLeGiua(ghe, COL_WIDTH) << "|";
+        count++;
+
+        if (count % COLUMNS == 0) {
+            cout << endl;
+        }
+    }
+
+    if (count % COLUMNS != 0) {
+        int remaining = COLUMNS - (count % COLUMNS);
+        for (int i = 0; i < remaining; ++i) {
+            cout << CanLeGiua("", COL_WIDTH) << "|";
+        }
+        cout << endl;
+    }
+
+    cout << string(TOTAL_WIDTH, '=') << "\033[0m" << endl;
+}
+
+void DemChuyenBayCuaMayBay(const string& soHieuMayBay, vector<ChuyenBay>& dsChuyenBay, vector<MayBay>& dsMayBay) {
+    cout << "\n--- THONG KE CHUYEN BAY CUA MAY BAY " << soHieuMayBay << " ---\n";
+
+    if (TimMayBay(soHieuMayBay, dsMayBay) == nullptr) {
+        cout << "\033[31m[LOI] So hieu may bay \"" << soHieuMayBay << "\" khong ton tai trong he thong.\033[0m\n";
+        return;
+    }
+
+    int count = 0;
+    list<string> maChuyenBayLienQuan;
+    for (const auto& cb : dsChuyenBay) {
+        if (cb.getSoHieuMayBay() == soHieuMayBay) {
+            count++;
+            maChuyenBayLienQuan.push_back(cb.getMaChuyenBay());
+        }
+    }
+
+    const int COL_SHMB = 20;
+    const int COL_COUNT = 15;
+    const int TOTAL_WIDTH = COL_SHMB + COL_COUNT + 3;
+
+    cout << "\033[35m";
+    cout << string(TOTAL_WIDTH, '=') << endl;
+    cout << "|" << CanLeGiua("SO HIEU MAY BAY", COL_SHMB)
+        << "|" << CanLeGiua("SO CHUYEN BAY", COL_COUNT)
+        << "|\n";
+    cout << string(TOTAL_WIDTH, '=') << "\033[0m" << endl;
+
+    cout << "|" << CanLeGiua(soHieuMayBay, COL_SHMB)
+        << "|" << CanLeGiua(to_string(count), COL_COUNT)
+        << "|\n";
+    cout << string(TOTAL_WIDTH, '-') << endl;
+
+    if (count > 0) {
+        cout << "\033[33m\n[CHI TIET MA CHUYEN BAY]:\033[0m ";
+        int i = 0;
+        for (const string& maCB : maChuyenBayLienQuan) {
+            cout << maCB;
+            if (++i < count) {
+                cout << ", ";
+            }
+        }
+        cout << endl;
+    }
 }
 
 int main() {
     KhoiTaoDuLieuMau();
+
+    vector<MayBay> dsMayBay;
+    DocFileMayBay(dsMayBay, "");
+
+    vector<ChuyenBay> dsChuyenBay;
+    DocFileChuyenBay(dsChuyenBay, "");
+
+    HienThiKhachHangTheoChuyenBay("CB001", dsChuyenBay);
+    HienThiKhachHangTheoChuyenBay("CB002", dsChuyenBay);
+    HienThiKhachHangTheoChuyenBay("CB999", dsChuyenBay);
+
+    cout << "\n======================================================\n";
+
+    LietKeGheTrongTheoChuyenBay("CB001", dsChuyenBay);
+    LietKeGheTrongTheoChuyenBay("CB005", dsChuyenBay);
+    LietKeGheTrongTheoChuyenBay("CB999", dsChuyenBay);
+
+    cout << "\n======================================================\n";
+
+    DemChuyenBayCuaMayBay("VN-A101", dsChuyenBay, dsMayBay);
+    DemChuyenBayCuaMayBay("VN-B202", dsChuyenBay, dsMayBay);
+    DemChuyenBayCuaMayBay("VN-X000", dsChuyenBay, dsMayBay);
+
+    cout << "\n======================================================\n";
+
+    return 0;
 }
